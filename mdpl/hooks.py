@@ -12,7 +12,8 @@ app_license = "mit"
 # include js, css files in header of desk.html
 # app_include_css = "/assets/mdpl/css/mdpl.css"
 # app_include_js = "/assets/mdpl/js/mdpl.js"
-
+app_include_js = ["/home/bizmap/frappe-bench/apps/mdpl/mdpl/public/js/custom_navbar.js",
+                  "/home/bizmap/frappe-bench/apps/mdpl/mdpl/public/js/testing.js"]
 # include js, css files in header of web template
 # web_include_css = "/assets/mdpl/css/mdpl.css"
 # web_include_js = "/assets/mdpl/js/mdpl.js"
@@ -28,7 +29,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    # "doctype" : "public/js/doctype.js"
+    "Payment Reconciliation": "public/js/payment_reconcilation.js",
+    }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -114,42 +118,122 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
+override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+# "Therapy Session": "custom_healthcare.custom_healthcare.therapy_session.customTherapySession"
+"Sales Invoice":"mdpl.mdpl.doctype.sales_invoice.CustomSalesInvoice"
+}
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"*": {
+        "validate":[
+			"mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven",
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.trigger_on_save_for_value_change"
+			
+			],
+        "on_cancel":[
+			"mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven",
+			
+			],
+        "on_submit":[
+			"mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven",
+			
+			],
+        "after_insert":[
+			"mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven",
+			
+			],
+        "before_insert":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_validate":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "after_save":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_save":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_rename":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "after_rename":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_submit":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "on_update_after_submit":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_submit":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_cancel":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "on_cancel":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "after_delete":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "before_update_after_submit":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        "on_trash":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_a_raven_for_method_event",
+		],
+        
+        
+
+	},
+    "Communication":{
+        "after_insert":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_raven_to_email_receiver",],
+        "validate":[
+            "mdpl.mdpl.doctype.raven_notification.raven_notification.send_raven_to_email_receiver",]
+    }
+    
+}
+
+jinja = {
+    "templates": [
+        "/mdpl/templates/navbar.html"
+    ]
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"mdpl.tasks.all"
-# 	],
-# 	"daily": [
-# 		"mdpl.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"mdpl.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"mdpl.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"mdpl.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    "cron":{
+        "0 8 * * *":[
+               "mdpl.mdpl.doctype.task.send_email_on_incomplete_task",
+		],
+        },
+    # "all": [
+	# 	"mdpl.tasks.all"
+	# ],    
+	"daily": [
+		"mdpl.mdpl.doctype.task.send_email_on_incomplete_task",
+        "mdpl.mdpl.doctype.raven_notification.raven_notification.send_raven_for_daily"
+	],
+	# "hourly": [
+	# 	"mdpl.tasks.hourly"
+	# ],
+	# "weekly": [
+	# 	"mdpl.tasks.weekly"
+	# ],
+	# "monthly": [
+	# 	"mdpl.tasks.monthly"
+	# ],
+}
 
 # Testing
 # -------
